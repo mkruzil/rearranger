@@ -1,8 +1,8 @@
 /*
 
-Row Rearranger
+HTML Table Row Rearranger
 
-Rearranges table rows using up and down arrows.
+Rearranges HTML table rows using up and down buttons.
 
 Copyright (c) 2012 Mike Kruzil
 
