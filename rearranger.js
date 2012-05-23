@@ -26,75 +26,77 @@ SOFTWARE.
 
 */
 
-function isElement(obj) {
-    return obj !== undefined && obj !== null && obj.nodeType === 1;
-}
+(function () {
 
-function move(tbody, tr, direction) {
-    var func = function () {};
-    if (isElement(tbody) && isElement(tr)) {
-        func = function () {
-            var child = {};
-            var nextSibling = tr.nextSibling;
-            var previousSibling = tr.previousSibling;
-            if (direction === 1 && nextSibling) {
-                child = tbody.removeChild(nextSibling);
-                tbody.insertBefore(child, tr);
-            } else if (direction === -1 && previousSibling && previousSibling.rowIndex !== 0) {
-                child = tbody.removeChild(previousSibling);
-                tbody.insertBefore(child, nextSibling);
-            }
-        };
+    "use strict";
+
+    function isElement(obj) {
+        return obj !== undefined && obj !== null && obj.nodeType === 1;
     }
-    return func;
-}
 
-function setControls(tbody) {
-    var rows = {};
-    var tr = {};
-    var spans = {};
-    var rowsLength = 0;
-    var i;
-    if (isElement(tbody)) {
-        rows = tbody.rows;
-        rowsLength = rows.length;
-        for (i = 0; i < rowsLength; i++) {
-            tr = rows.item(i);
-            spans = tr.getElementsByTagName("SPAN");
-            if (spans && spans.length === 2) {
-                spans.item(0).onclick = move(tbody, tr, -1);
-                spans.item(1).onclick = move(tbody, tr, 1);
+    function move(tbody, tr, direction) {
+        if (isElement(tbody) && isElement(tr)) {
+            return function () {
+                var child = {};
+                var nextSibling = tr.nextSibling;
+                var previousSibling = tr.previousSibling;
+                if (direction === 1 && nextSibling) {
+                    child = tbody.removeChild(nextSibling);
+                    tbody.insertBefore(child, tr);
+                } else if (direction === -1 && previousSibling && previousSibling.rowIndex !== 0) {
+                    child = tbody.removeChild(previousSibling);
+                    tbody.insertBefore(child, nextSibling);
+                }
+            };
+        }
+    }
+
+    function setActions(tbody) {
+        var rows = {};
+        var tr = {};
+        var spans = {};
+        var rowsLength = 0;
+        var i;
+        if (isElement(tbody)) {
+            rows = tbody.rows;
+            rowsLength = rows.length;
+            for (i = 0; i < rowsLength; i++) {
+                tr = rows.item(i);
+                spans = tr.getElementsByTagName("SPAN");
+                if (spans && spans.length === 2) {
+                    spans.item(0).onclick = move(tbody, tr, -1);
+                    spans.item(1).onclick = move(tbody, tr, 1);
+                }
             }
         }
     }
-}
 
-function stripTextNodes(tbody) {
-    var node = {};
-    var nodeType = 3; //TEXT_NODE
-    var i = 0;
-    if (isElement(tbody) && tbody.hasChildNodes()) {
-        i = tbody.childNodes.length;
-        while (--i >= 0) {
-            node = tbody.childNodes.item(i);
-            if (node.nodeType === nodeType) {
-                tbody.removeChild(node);
+    function stripTextNodes(element) {
+        var node = {};
+        var nodeType = 3; //TEXT_NODE
+        var i = 0;
+        if (isElement(element) && element.hasChildNodes()) {
+            i = element.childNodes.length;
+            while (--i >= 0) {
+                node = element.childNodes.item(i);
+                if (node.nodeType === nodeType) {
+                    element.removeChild(node);
+                }
             }
         }
     }
-}
 
-function getTBODY(id) {
-    var tbody = {};
-    if (typeof id === "string") {
-        tbody = window.document.getElementById(id);
+    function init(id) {
+        var table = window.document.getElementById(id);
+        var tbody = {};
+        if (table) {
+            tbody = table.tBodies.item(0);
+            if (tbody) {
+                stripTextNodes(tbody);
+                setActions(tbody);
+            }
+        }
     }
-    return tbody;
-}
 
-var id = "names";
-var tbody = getTBODY(id);
-if (tbody) {
-    stripTextNodes(tbody);
-    setControls(tbody);
-}
+    init("rearranger");
+}());

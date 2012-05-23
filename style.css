@@ -1,3 +1,8 @@
+table, th, td {
+    border: 1px solid #000000;
+    padding: 10px;
+}
+
 .action span {
     text-decoration: underline;
     cursor: pointer;
